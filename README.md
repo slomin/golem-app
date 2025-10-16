@@ -21,6 +21,16 @@ aflutter run -d android
 flutter run -d ios
 ```
 
+## Tests
+
+Run the full test suite locally with:
+
+```bash
+flutter test
+```
+
+CI runs the same command on pushes to `main`, `develop`, and any `release/*` branch and on pull requests targeting those branches (see `.github/workflows/flutter-tests.yml`). You can also trigger a manual run via the "Flutter Tests" workflow dispatch in GitHub.
+
 ## Status
 
 Early MVP. Expect rough edges; performance and UX are WIP.
