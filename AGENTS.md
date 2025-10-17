@@ -8,9 +8,16 @@
 - When tests require time to stream results (e.g., fake LLM), lower `tokenDelay` inside the test to keep cycles fast.
 - If the suite fails to compile, create the minimal scaffolding first; re-run tests until they fail on assertions instead of import errors, then continue iterating.
 - Use Mobile MCP for UI validation on Android emulators and iOS simulators: `mobile_list_available_devices` → pick the active device → drive interactions with `mobile_list_elements_on_screen`, `mobile_click_on_screen_at_coordinates`, `mobile_swipe_on_screen`, or `mobile_type_keys`; keep the existing `flutter run` session open, watch host logs (paragraph ids, slider readings), and only rebuild if the app is no longer running.
+- Debug iOS builds launched via `flutter run` cannot be started from Spotlight or the home screen—always keep the original `flutter run` session alive while using Mobile MCP.
+- When driving the UI with Mobile MCP, prefer elements surfaced via Flutter semantics/`ValueKey`s (use `mobile_list_elements_on_screen` to locate them) instead of hard-coded coordinates; only fall back to raw coordinates if no semantic identifier is available.
+- Apple Foundation Model work stays iOS-only: write/override tests so they keep using `FakeLlmRepository`, and validate the native bridge manually on real hardware (or the provided simulator) before shipping.
+- Before claiming the task is complete, run platform builds; iOS today via `flutter build ios --no-codesign` (Android instructions TBD once implemented).
 
 ## Project Structure & Module Organization
 - `lib/` holds Flutter application code (`main.dart` currently drives the sample counter UI).
+- `lib/data/apple_foundation_flutter_repository.dart` hosts the Apple Intelligence bridge that implements `LlmRepository`; the fake repository remains in `lib/data/fake_llm_repository.dart`.
+- Apple Intelligence integration uses the `apple_foundation_flutter` plugin; native glue lives in the dependency, so the Runner target no longer maintains a custom method channel.
+- We vendor the plugin under `packages/apple_foundation_flutter`; make changes there (not in `.pub-cache`) and keep `pubspec.yaml` pointing at the path dependency.
 - `assets/` contains static resources such as icons; update `pubspec.yaml` when adding new assets.
 - Mock LLM content for the fake repository lives under `assets/mock_data/llm/`; keep JSON there and remember to register new files in `pubspec.yaml`.
 - `test/` stores widget and future unit/integration tests; use subfolders (`widget/`, `unit/`, etc.) for clarity.
@@ -33,6 +40,7 @@
 - Run `flutter test` locally before pushing; this mirrors the CI command.
 - Work iteratively: after each meaningful change, run the relevant tests yourself before requesting reviews or handing off.
 - When tests rely on assets or data sources, provide overrides/mocks (see `_StubDataSource` in `test/unit/llm_providers_test.dart`) so suites stay fast and deterministic.
+- For Apple Foundation Model features, override `appleFoundationModelRepositoryProvider` with a fake implementation in tests to avoid real device dependencies. Leave hardware validation to manual MCP/phys-device loops.
 - After coding + test iterations, run `dart format` on touched Dart files before wrapping up; this keeps diffs clean and satisfies analyzer/lint rules.
 
 ## CI Workflow

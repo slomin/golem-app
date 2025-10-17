@@ -14,6 +14,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^3.0.3
   riverpod: ^3.0.3
+  apple_foundation_flutter:
+    path: packages/apple_foundation_flutter
 
 dev_dependencies:
   flutter_test:

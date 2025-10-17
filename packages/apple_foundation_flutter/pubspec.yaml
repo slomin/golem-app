@@ -1,0 +1,26 @@
+name: apple_foundation_flutter
+description: "A package for interacting with Apple's Foundation framework in Flutter."
+version: 0.1.0
+homepage: https://github.com/AbdurahmanAlmehdi/apple_foundation_flutter
+
+environment:
+  sdk: ^3.8.1
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+ 
+  plugin:
+    platforms:
+      ios:
+        pluginClass: AppleFoundationFlutterPlugin
+

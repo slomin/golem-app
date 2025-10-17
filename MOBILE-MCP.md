@@ -22,4 +22,5 @@
 ## Testing Discipline
 - Run `flutter test` after changes (widget test suite now covers the slider behavior).
 - Use MCP to do quick smoke checks without rebuilding, mirroring manual QA steps on both Android (`emulator-5554`) and iOS (`iPhone 16 Pro sim_01`).
+- Apple Foundation Model flows require real iOS hardware to produce live tokens; when unavailable, expect the fallback fake LLM. Keep the physical device handy (e.g., iPhone 15 Pro Max) and drive it through MCP once the bridge is wired.
 - Record coordinates or accessibility labels as you explore so future MCP sessions can reuse them.
