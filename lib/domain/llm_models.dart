@@ -2,10 +2,7 @@ class LlmChunk {
   final String token;
   final int index;
 
-  const LlmChunk({
-    required this.token,
-    required this.index,
-  });
+  const LlmChunk({required this.token, required this.index});
 }
 
 class LlmRequest {

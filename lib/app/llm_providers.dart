@@ -107,25 +107,6 @@ class AppleBackendPreferenceNotifier extends Notifier<bool> {
   }
 }
 
-class CurrentLlmRequestNotifier extends Notifier<LlmRequest?> {
-  @override
-  LlmRequest? build() => null;
-
-  void setRequest(LlmRequest request) {
-    state = request;
-  }
-
-  void clear() {
-    state = null;
-  }
-}
-
-final currentLlmRequestProvider =
-    NotifierProvider<CurrentLlmRequestNotifier, LlmRequest?>(
-      CurrentLlmRequestNotifier.new,
-      name: 'currentLlmRequest',
-    );
-
 final llmCompletionProvider = StreamProvider.family
     .autoDispose<List<LlmChunk>, LlmRequest>((ref, request) {
       final repo = ref.watch(llmRepositoryProvider);
