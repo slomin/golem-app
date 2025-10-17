@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golem_app/utils/token_rate_tracker.dart';
 
+@Timeout(Duration(seconds: 1))
 void main() {
   group('TokenRateTracker', () {
     test('returns zero snapshot when no tokens recorded', () {

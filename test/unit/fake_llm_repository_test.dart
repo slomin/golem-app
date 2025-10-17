@@ -8,6 +8,7 @@ import 'package:golem_app/data/sources/local/fake_llm_data_source.dart';
 import 'package:golem_app/data/tokenizers/llama_like_tokenizer.dart';
 import 'package:golem_app/domain/llm_models.dart';
 
+@Timeout(Duration(seconds: 1))
 void main() {
   group('FakeLlmRepository', () {
     setUpAll(() async {
@@ -112,9 +113,7 @@ void main() {
     });
 
     test('throws when data source yields no paragraphs', () async {
-      final repo = FakeLlmRepository(
-        dataSource: _TestFakeDataSource(const []),
-      );
+      final repo = FakeLlmRepository(dataSource: _TestFakeDataSource(const []));
 
       const request = LlmRequest(
         prompt: 'Expect failure when data is missing',
@@ -122,10 +121,7 @@ void main() {
         tokenDelay: Duration.zero,
       );
 
-      await expectLater(
-        repo.streamCompletion(request).first,
-        throwsStateError,
-      );
+      await expectLater(repo.streamCompletion(request).first, throwsStateError);
     });
 
     test('throws when tokenizer emits no tokens', () async {
@@ -144,10 +140,7 @@ void main() {
         tokenDelay: Duration.zero,
       );
 
-      await expectLater(
-        repo.streamCompletion(request).first,
-        throwsStateError,
-      );
+      await expectLater(repo.streamCompletion(request).first, throwsStateError);
     });
   });
 }

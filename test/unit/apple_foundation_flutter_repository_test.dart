@@ -6,6 +6,7 @@ import 'package:golem_app/data/apple_foundation_flutter_repository.dart';
 import 'package:golem_app/data/tokenizers/llama_like_tokenizer.dart';
 import 'package:golem_app/domain/llm_models.dart';
 
+@Timeout(Duration(seconds: 1))
 void main() {
   group('AppleFoundationFlutterRepository', () {
     test('emits incremental chunks from the underlying stream', () async {

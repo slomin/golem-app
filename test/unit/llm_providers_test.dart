@@ -9,6 +9,7 @@ import 'package:golem_app/data/tokenizers/llama_like_tokenizer.dart';
 import 'package:golem_app/data/llm_repository.dart';
 import 'package:golem_app/domain/llm_models.dart';
 
+@Timeout(Duration(seconds: 1))
 void main() {
   group('llmCompletionProvider', () {
     test('streams chunk buffers up to max tokens', () async {
@@ -84,48 +85,53 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           fakeLlmRepositoryProvider.overrideWithValue(fakeRepo),
-          appleFoundationModelRepositoryProvider.overrideWith((ref) async => null),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      final repo = container.read(llmRepositoryProvider);
-      expect(repo, same(fakeRepo));
-    });
-
-    test('falls back to fake even if preference enabled but Apple unavailable', () async {
-      final fakeRepo = FakeLlmRepository(
-        tokenizer: LlamaLikeTokenizer(),
-        dataSource: _StubDataSource([
-          const FakeLlmParagraph(
-            id: 1,
-            text: 'Stub paragraph for fallback verification.',
+          appleFoundationModelRepositoryProvider.overrideWith(
+            (ref) async => null,
           ),
-        ]),
-        config: const FakeLlmConfig(maxTokens: 32, tokensPerSecond: 64),
-      );
-      final container = ProviderContainer(
-        overrides: [
-          fakeLlmRepositoryProvider.overrideWithValue(fakeRepo),
-          appleFoundationModelRepositoryProvider.overrideWith((ref) async => null),
         ],
       );
       addTearDown(container.dispose);
 
-      container
-          .read(useAppleFoundationModelPreferenceProvider.notifier)
-          .set(true);
-      await container.read(
-        appleFoundationModelRepositoryProvider.future,
-      );
       final repo = container.read(llmRepositoryProvider);
-
       expect(repo, same(fakeRepo));
-      expect(
-        container.read(useAppleFoundationModelPreferenceProvider),
-        isTrue,
-      );
     });
+
+    test(
+      'falls back to fake even if preference enabled but Apple unavailable',
+      () async {
+        final fakeRepo = FakeLlmRepository(
+          tokenizer: LlamaLikeTokenizer(),
+          dataSource: _StubDataSource([
+            const FakeLlmParagraph(
+              id: 1,
+              text: 'Stub paragraph for fallback verification.',
+            ),
+          ]),
+          config: const FakeLlmConfig(maxTokens: 32, tokensPerSecond: 64),
+        );
+        final container = ProviderContainer(
+          overrides: [
+            fakeLlmRepositoryProvider.overrideWithValue(fakeRepo),
+            appleFoundationModelRepositoryProvider.overrideWith(
+              (ref) async => null,
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        container
+            .read(useAppleFoundationModelPreferenceProvider.notifier)
+            .set(true);
+        await container.read(appleFoundationModelRepositoryProvider.future);
+        final repo = container.read(llmRepositoryProvider);
+
+        expect(repo, same(fakeRepo));
+        expect(
+          container.read(useAppleFoundationModelPreferenceProvider),
+          isTrue,
+        );
+      },
+    );
 
     test('uses Apple FM repository when it becomes available on iOS', () async {
       final fakeRepo = FakeLlmRepository(
@@ -143,7 +149,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           fakeLlmRepositoryProvider.overrideWithValue(fakeRepo),
-          appleFoundationModelRepositoryProvider.overrideWith((ref) async => appleRepo),
+          appleFoundationModelRepositoryProvider.overrideWith(
+            (ref) async => appleRepo,
+          ),
         ],
       );
       addTearDown(container.dispose);

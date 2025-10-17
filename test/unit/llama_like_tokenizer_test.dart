@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golem_app/data/tokenizers/llama_like_tokenizer.dart';
 
+@Timeout(Duration(seconds: 1))
 void main() {
   group('LlamaLikeTokenizer', () {
     test('encodes words with ▁ on word boundaries', () {
